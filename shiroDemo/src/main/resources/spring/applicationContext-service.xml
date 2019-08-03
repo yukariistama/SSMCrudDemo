@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	   xmlns:context="http://www.springframework.org/schema/context"
+	   xmlns:jdbc="http://www.springframework.org/schema/jdbc" xmlns:tx="http://www.springframework.org/schema/tx"
+	   xmlns:jpa="http://www.springframework.org/schema/data/jpa" xmlns:task="http://www.springframework.org/schema/task"
+	   xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+		http://www.springframework.org/schema/data/jpa
+		http://www.springframework.org/schema/data/jpa/spring-jpa.xsd">
+
+	<!-- 扫描 @Service @Controller @Repository -->
+	<context:component-scan base-package="cn.itcast" />
+
+	<context:property-placeholder location="classpath:properties/db.properties"></context:property-placeholder>
+
+	<!-- 数据库连接池 -->
+	<bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource"
+		  destroy-method="close">
+		<property name="url" value="${jdbc.url}" />
+		<property name="username" value="${jdbc.username}" />
+		<property name="password" value="${jdbc.password}" />
+		<property name="driverClassName" value="${jdbc.driver}" />
+		<property name="maxActive" value="10" />
+		<property name="minIdle" value="5" />
+	</bean>
+
+	<!--事务管理器 -->
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+	<!--注解管理事务
+		proxy-target-class : 设置代理方式，true:cglib代理方式，继承式代理方式，false:jdk的代理方式，接口实现类方式
+	-->
+	<tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true"/>
+
+
+</beans>
